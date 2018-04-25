@@ -8,8 +8,17 @@ auxNum = os.environ['AUX_NUMBER']
 
 client = Client(accountSID, authToken)
 
-client.messages.create(	
-	to=auxNum,
-	from_=twilioNum,
-	body='How many robots do you count')
+def send_message(number=auxNum, message='Default Message says Hello'):
+    client.messages.create(
+        to=number,
+        from_=twilioNum,
+        body=message)
+
+
+if __name__ == '__main__':
+
+    client.messages.create( 
+        to=auxNum,
+        from_=twilioNum,
+        body='How many robots do you count')
 
