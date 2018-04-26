@@ -39,6 +39,7 @@ $(function() {
 
     // Alert the user they have been assigned a random username
     print('Logging in...');
+    console.log('Logging in...');
 
     // Get an access token for the current user, passing a username (identity)
     // and a device ID - for browser-based apps, we'll always just use the 
@@ -53,14 +54,18 @@ $(function() {
 
         // Initialize the Chat client
         chatClient = new Twilio.Chat.Client(data.token);
-        chatClient.getSubscribedChannels().then(createOrJoinGeneralChannel);        
+        console.log('chatClient Finished');
+        chatClient.getSubscribedChannels().then(createOrJoinGeneralChannel);
+        console.log('did the channel start');        
     });
 
     function createOrJoinGeneralChannel() {
         // Get the general chat channel, which is where all the messages are
         // sent in this simple application
         print('Attempting to join "general" chat channel...');
+        console.log('Attempting to join "general" chat channel...');
         var promise = chatClient.getChannelByUniqueName('general');
+        console.log('Chat Channel in Promise');
         promise.then(function(channel) {
             generalChannel = channel;
             console.log('Found general channel:');
