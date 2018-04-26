@@ -14,7 +14,7 @@ from twilio.jwt.access_token.grants import (
 # Create your views here.
 
 def app(request):
-	return render(request, 'twilio/index.html')
+	return render(request, 'twilio/base.html')
 
 def token(request):
 	fake = Factory.create()
