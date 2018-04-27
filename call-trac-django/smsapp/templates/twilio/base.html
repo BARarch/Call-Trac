@@ -108,9 +108,9 @@
                         <button class="btn btn-primary btn-sm" id="btn-chat">Send</button>
                         </span>
 
-                        <form class='my-ajax-form' method='POST' action='.' data-url='{{ request.build_absolute_uri }}'>
+                        <form class='my-ajax-form' method='POST' action='.' data-url='{{ request.build_absolute_uri|safe }}'>
                             {% csrf_token %}
-                            {{form.as_p}}
+                            {{ form.as_p|safe }}
                             <button type='submit'>Send</button>
                         </form>
                     </div>
