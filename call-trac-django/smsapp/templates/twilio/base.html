@@ -101,10 +101,18 @@
                 </div>
                 <div class="panel-footer">
                     <div class="input-group">
+                        
+
                         <input id="btn-input" type="text" class="form-control input-sm chat_input" placeholder="Write your message here..." />
                         <span class="input-group-btn">
                         <button class="btn btn-primary btn-sm" id="btn-chat">Send</button>
                         </span>
+
+                        <form class='my-ajax-form' method='POST' action='.' data-url='{{ request.build_absolute_uri }}'>
+                            {% csrf_token %}
+                            {{form.as_p}}
+                            <button type='submit'>Send</button>
+                        </form>
                     </div>
                 </div>
     		</div>

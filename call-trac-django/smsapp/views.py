@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.views.generic import FormView
+from .forms import SMSForm
 
 from faker import Factory
 from django.http import JsonResponse
@@ -13,8 +15,16 @@ from twilio.jwt.access_token.grants import (
 
 # Create your views here.
 
+class SMSFormView(FormView):
+	form_class = SMSForm
+	template_name = 'twilio/base.html'
+	success_url = '/message-sent/'
+
 def app(request):
 	return render(request, 'twilio/base.html')
+
+def outgoing(request):
+	return 1
 
 def token(request):
 	fake = Factory.create()
