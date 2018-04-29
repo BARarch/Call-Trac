@@ -33,29 +33,6 @@ TWILIO_CLIENT = Client(TWILIO_ACCT_SID, TWILIO_AUTH_TOKEN)
 
 # Create your views here.
 
-class SMSFormView(FormView):
-    form_class = SMSForm
-    template_name = 'twilio/base.html'
-    success_url = '/message-sent/'
-
-    def form_invalid(self, form):
-        response = super(SMSFormView, self).form_invalid(form)
-        if self.request.is_ajax():
-            return JsonResponse(form.errors, status=400)
-        else:
-            return response
-
-    def form_valid(self, form):
-        response = super(SMSFormView, self).form_valid(form)
-        if self.request.is_ajax():
-            print(form.cleaned_data)
-            data = {
-                'message': "Successfully submitted form data."
-            }
-            return JsonResponse(data)
-        else:
-            return response
-
 def app(request):
     message_form = SMSForm()
     return render(request, 'twilio/base.html', {'form':message_form})
@@ -74,6 +51,7 @@ def send(request):
                 print('Message Sent')
             else:
                 print('Message Not Sent: not a valid number')
+
     message_form = SMSForm()        
     return render(request, 'twilio/base.html', {'form':message_form})
 
@@ -84,6 +62,7 @@ def sms(request):
         print('\nThere was a message from: {}'.format(query['From']))
         print('...and it said: {}\n'.format(query['Body']))
         message_form = SMSForm()
+        
     return render(request, 'twilio/base.html', {'form':message_form})
 
 
