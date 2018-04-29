@@ -16,7 +16,9 @@ from twilio.jwt.access_token.grants import (
 from django.views.decorators.csrf import csrf_exempt
 
 import os
+from twilio.base.exceptions import TwilioRestException
 from twilio.rest import Client
+
 
 TWILIO_ACCT_SID = os.environ['TWILIO_ACCOUNT_SID']
 TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
@@ -62,7 +64,8 @@ def send(request):
 
         if message_form.is_valid():
             print('__send: {}'.format(message_form.cleaned_data))
-            print(TWILIO_ACCT_SID)
+            print(is_valid_number(message_form.cleaned_data['number']))
+            
 
     message_form = SMSForm()        
     return render(request, 'twilio/base.html', {'form':message_form})
@@ -77,38 +80,18 @@ def sms(request):
     return render(request, 'twilio/base.html', {'form':message_form})
 
 
-def token(request):
-    fake = Factory.create()
-    return generateToken(fake.user_name())
-
-def generateToken(identity):
-    # Credetials from Environment Vars
-    account_sid = settings.TWILIO_ACCT_SID
-    chat_service_sid = settings.TWILIO_CHAT_SID
-    sync_service_sid = settings.TWILIO_SYNC_SID
-    api_sid = settings.TWILIO_API_SID
-    api_secret = settings.TWILIO_API_SECRET
-
-    print('Account Sid :{}:'.format(account_sid))
-    print('Chat Sid :{}:'.format(chat_service_sid))
-
-    print
-
-    # Create access token
-    token = AccessToken(account_sid, api_sid, api_secret, identity=identity)
-
-    # Create sync grant
-    if sync_service_sid:
-        sync_grant = SyncGrant(service_sid=chat_service_sid)
-        token.add_grant(sync_grant)
-
-    if chat_service_sid:
-        chat_grant = ChatGrant(service_sid=chat_service_sid)
-        token.add_grant(chat_grant)
-
-    print('there was a token generated for {}'.format(identity))
-
-    return JsonResponse({'identity':identity, 'token':token.to_jwt().decode('utf-8')})
-
+def is_valid_number(number):
+    try:
+        response = TWILIO_CLIENT.lookups.phone_numbers(number).fetch(type="carrier")
+        print('__carrier: {}'.format(response.carrier))
+        if response.carrier['type'] == 'mobile':
+            return True
+        else:
+            return False
+    except TwilioRestException as e:
+        if e.code == 20404:
+            return False
+        else:
+            raise e
 
 
