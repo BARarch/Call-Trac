@@ -13,6 +13,20 @@ from twilio.jwt.access_token.grants import (
     ChatGrant
 )
 
+from django.views.decorators.csrf import csrf_exempt
+
+import os
+from twilio.rest import Client
+
+TWILIO_ACCT_SID = os.environ['TWILIO_ACCOUNT_SID']
+TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
+TWILIO_CHAT_SID = os.environ['TWILIO_CHAT_SID']
+TWILIO_SYNC_SID = os.environ['TWILIO_SYNC_SID']
+TWILIO_API_SID = os.environ['TWILIO_API_SID']
+TWILIO_API_SECRET = os.environ['TWILIO_API_SECRET']
+
+TWILIO_CLIENT = Client(TWILIO_ACCT_SID, TWILIO_AUTH_TOKEN)
+
 # Create your views here.
 
 class SMSFormView(FormView):
@@ -39,10 +53,29 @@ class SMSFormView(FormView):
             return response
 
 def app(request):
-    return render(request, 'twilio/base.html')
+    message_form = SMSForm()
+    return render(request, 'twilio/base.html', {'form':message_form})
 
-def outgoing(request):
-    return 1
+def send(request):
+    if request.method == 'POST':
+        message_form = SMSForm(request.POST)
+
+        if message_form.is_valid():
+            print('__send: {}'.format(message_form.cleaned_data))
+            print(TWILIO_ACCT_SID)
+
+    message_form = SMSForm()        
+    return render(request, 'twilio/base.html', {'form':message_form})
+
+@csrf_exempt
+def sms(request):
+    if request.method == 'POST':
+        query = request.POST
+        print('\nThere was a message from: {}'.format(query['From']))
+        print('...and it said: {}\n'.format(query['Body']))
+        message_form = SMSForm()
+    return render(request, 'twilio/base.html', {'form':message_form})
+
 
 def token(request):
     fake = Factory.create()

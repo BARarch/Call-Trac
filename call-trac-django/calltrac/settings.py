@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from twilio.rest import Client
+
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +28,7 @@ SECRET_KEY = '0t3m!it8o+poom&=he%$c&cln!87ujazwf%k$w+32x9_k0c7&6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','50db334d.ngrok.io']
 
 
 # Application definition
@@ -121,8 +124,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (os.path.join(os.path.dirname(__file__), 'static'),)
-TWILIO_ACCT_SID = os.environ['TWILIO_ACCOUNT_SID']
-TWILIO_CHAT_SID = os.environ['TWILIO_CHAT_SID']
-TWILIO_SYNC_SID = os.environ['TWILIO_SYNC_SID']
-TWILIO_API_SID = os.environ['TWILIO_API_SID']
-TWILIO_API_SECRET = os.environ['TWILIO_API_SECRET']
+

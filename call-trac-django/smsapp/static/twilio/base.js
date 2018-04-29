@@ -64,7 +64,7 @@ $.ajaxSetup({
 
 
 // AJAX Calls for Messaging App
-$(document).ready(function(){
+/*$(document).ready(function(){
     var $myForm = $('.my-ajax-form')
     $myForm.submit(function(event){
         event.preventDefault()
@@ -91,4 +91,4 @@ $(document).ready(function(){
         console.log(textStatus)
         console.log(errorThrown)
     }
-})
+})*/
