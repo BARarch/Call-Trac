@@ -26,6 +26,8 @@ TWILIO_CHAT_SID = os.environ['TWILIO_CHAT_SID']
 TWILIO_SYNC_SID = os.environ['TWILIO_SYNC_SID']
 TWILIO_API_SID = os.environ['TWILIO_API_SID']
 TWILIO_API_SECRET = os.environ['TWILIO_API_SECRET']
+TWILIO_NUMBER = os.environ['TWILIO_NUMBER']
+AUX_NUMBER = os.environ['AUX_NUMBER']
 
 TWILIO_CLIENT = Client(TWILIO_ACCT_SID, TWILIO_AUTH_TOKEN)
 
@@ -64,9 +66,14 @@ def send(request):
 
         if message_form.is_valid():
             print('__send: {}'.format(message_form.cleaned_data))
-            print(is_valid_number(message_form.cleaned_data['number']))
-            
+            number = message_form.cleaned_data['number']
+            message = message_form.cleaned_data['message']
 
+            if is_valid_number(number):
+                send_message(message=message)
+                print('Message Sent')
+            else:
+                print('Message Not Sent: not a valid number')
     message_form = SMSForm()        
     return render(request, 'twilio/base.html', {'form':message_form})
 
@@ -83,7 +90,7 @@ def sms(request):
 def is_valid_number(number):
     try:
         response = TWILIO_CLIENT.lookups.phone_numbers(number).fetch(type="carrier")
-        print('__carrier: {}'.format(response.carrier))
+        print('__sendCarrier: {}'.format(response.carrier))
         if response.carrier['type'] == 'mobile':
             return True
         else:
@@ -93,5 +100,11 @@ def is_valid_number(number):
             return False
         else:
             raise e
+
+def send_message(number=AUX_NUMBER, message='Default Message says Hello'):
+    TWILIO_CLIENT.messages.create(
+        to=number,
+        from_=TWILIO_NUMBER,
+        body=message)
 
 
