@@ -19,6 +19,7 @@ import os
 from twilio.base.exceptions import TwilioRestException
 from twilio.rest import Client
 
+from .models import MobileNumber, MobileMessage
 
 TWILIO_ACCT_SID = os.environ['TWILIO_ACCOUNT_SID']
 TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
@@ -43,11 +44,14 @@ def send(request):
 
         if message_form.is_valid():
             print('__send: {}'.format(message_form.cleaned_data))
+            name = message_form.cleaned_data['name']
             number = message_form.cleaned_data['number']
             message = message_form.cleaned_data['message']
 
             if is_valid_number(number):
+                numberRecord = log_moble_number(number, name)
                 send_message(message=message)
+                log_message(numberRecord, message, True)
                 print('Message Sent')
             else:
                 print('Message Not Sent: not a valid number')
@@ -59,12 +63,19 @@ def send(request):
 def sms(request):
     if request.method == 'POST':
         query = request.POST
-        print('\nThere was a message from: {}'.format(query['From']))
-        print('...and it said: {}\n'.format(query['Body']))
-        message_form = SMSForm()
-        
-    return render(request, 'twilio/base.html', {'form':message_form})
+        number = query['From']
+        messageText = query['Body']
 
+        print('\nThere was a message from: {}'.format(number))
+        print('...and it said: {}\n'.format(messageText))
+
+        
+        numberRecord = log_moble_number(number=number)
+        log_message(numberRecord, messageText, False)
+
+        message_form = SMSForm()
+
+    return render(request, 'twilio/base.html', {'form':message_form})
 
 def is_valid_number(number):
     try:
@@ -81,9 +92,24 @@ def is_valid_number(number):
             raise e
 
 def send_message(number=AUX_NUMBER, message='Default Message says Hello'):
+
     TWILIO_CLIENT.messages.create(
         to=number,
         from_=TWILIO_NUMBER,
         body=message)
+
+def log_moble_number(number=AUX_NUMBER, name='NONE'):
+    numberRecord = MobileNumber.objects.filter(phone=number)
+    if numberRecord:
+        numberRecord = numberRecord[0]
+    else:
+        numberRecord = MobileNumber(phone=number, name=name)
+        numberRecord.save()
+    return numberRecord
+
+def log_message(numberRecord, body, sent):
+    MobileMessage(number=numberRecord, body=body, sent=sent).save()
+
+
 
 
