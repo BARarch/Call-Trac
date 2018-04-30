@@ -56,7 +56,10 @@ def send(request):
                 log_message(numberRecord, message, True)
                 print('Message Sent')
             else:
+                message_form.add_error('number', 'not a valid number')
                 print('Message Not Sent: not a valid number')
+                data = get_messages()
+                return render(request, 'twilio/base.html', {'form':message_form, 'messages':data})
 
     message_form = SMSForm()        
     return HttpResponseRedirect('/rerender/')
