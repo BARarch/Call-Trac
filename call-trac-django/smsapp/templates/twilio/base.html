@@ -67,20 +67,22 @@
                         <p>
                         <form class='my-ajax-form' method='POST' action='/send/' >
                             {% csrf_token %}
-                            <div class="input-group input-group-sm col-12">
+                            <p>
                                 {{ form.name }}
                                 
-                            </div>
-                            <div class="input-group input-group-sm mb-2">
+                            </p>
+                            <p>
                                 {{ form.number }}
                                 {{ form.number.errors }}      
-                            </div>
-                            <div class="input-group input-group-sm mb-2">
+                            </p>
+                            <div class="input-group">
                                 {{ form.message }}
                                 <span class="input-group-btn">
-                                    <button class="btn btn-primary btn-sm" id="btn-chat" type='submit'>Send</button>
+                                    <button class="btn btn-primary btn-lg" id="btn-chat" type='submit'>Send</button>
                                 </span>
                             </div>
+
+                            
                             
 
                             
