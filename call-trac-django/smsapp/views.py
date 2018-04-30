@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.views.generic import FormView
 from .forms import SMSForm
 
@@ -33,10 +34,11 @@ AUX_NUMBER = os.environ['AUX_NUMBER']
 TWILIO_CLIENT = Client(TWILIO_ACCT_SID, TWILIO_AUTH_TOKEN)
 
 # Create your views here.
-
+@csrf_exempt
 def app(request):
     message_form = SMSForm()
-    return render(request, 'twilio/base.html', {'form':message_form})
+    data = get_messages()
+    return render(request, 'twilio/base.html', {'form':message_form, 'messages':data})
 
 def send(request):
     if request.method == 'POST':
@@ -57,7 +59,7 @@ def send(request):
                 print('Message Not Sent: not a valid number')
 
     message_form = SMSForm()        
-    return render(request, 'twilio/base.html', {'form':message_form})
+    return HttpResponseRedirect('/rerender/')
 
 @csrf_exempt
 def sms(request):
@@ -73,9 +75,9 @@ def sms(request):
         numberRecord = log_moble_number(number=number)
         log_message(numberRecord, messageText, False)
 
-        message_form = SMSForm()
+        #message_form = SMSForm()
 
-    return render(request, 'twilio/base.html', {'form':message_form})
+    return HttpResponseRedirect('/rerender/')
 
 def is_valid_number(number):
     try:
@@ -109,6 +111,12 @@ def log_moble_number(number=AUX_NUMBER, name='NONE'):
 
 def log_message(numberRecord, body, sent):
     MobileMessage(number=numberRecord, body=body, sent=sent).save()
+
+
+def get_messages():
+    result = MobileMessage.objects.all()
+    return result
+
 
 
 

@@ -61,7 +61,10 @@ $.ajaxSetup({
     }
 });
 
-
+$(document).ready(function(){
+    $('#id_message').attr("placeholder", "Write your message here...");
+    $('#id_message').addClass( "form-control input-sm chat_input" );
+});
 
 // AJAX Calls for Messaging App
 /*$(document).ready(function(){
